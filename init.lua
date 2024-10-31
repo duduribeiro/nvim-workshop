@@ -1,0 +1,187 @@
+-- --- parte 1
+-- --- ajustes básicos:
+-- ---
+-- --- usar espaços ao invés de tab e ajustar para 2 espaços
+--
+-- vim.opt.expandtab = true
+-- vim.opt.tabstop = 2
+-- vim.opt.softtabstop = 2
+-- vim.opt.shiftwidth = 2
+-- vim.g.mapleader = " " -- configura espaço como leader key
+--
+-- vim.opt.number = true
+-- vim.opt.relativenumber = true
+-- vim.opt.cursorline = true
+-- vim.opt.cursorlineopt = "both"
+--
+-- vim.opt.ignorecase = true
+-- vim.opt.smartcase = true
+--
+-- --- parte 2
+-- --- package manager
+-- ---
+--
+-- local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+-- if not (vim.uv or vim.loop).fs_stat(lazypath) then
+--   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+--   local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+--   if vim.v.shell_error ~= 0 then
+--     vim.api.nvim_echo({
+--       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+--       { out,                            "WarningMsg" },
+--       { "\nPress any key to exit..." },
+--     }, true, {})
+--     vim.fn.getchar()
+--     os.exit(1)
+--   end
+-- end
+-- vim.opt.rtp:prepend(lazypath)
+--
+-- require("lazy").setup({
+--   spec = {
+--     -- add your plugins here
+--
+--     -- part 3: colorscheme
+--     {
+--       {
+--         "catppuccin/nvim",
+--         name = "catppuccin",
+--         priority = 1000,
+--         config = function()
+--           require("catppuccin").setup({
+--             flavor = "frappe",
+--           })
+--
+--           vim.cmd.colorscheme("catppuccin")
+--         end,
+--       },
+--     },
+--
+--     -- part 4: navegação
+--     {
+--       "nvim-telescope/telescope.nvim",
+--       tag = "0.1.8",
+--       dependencies = { "nvim-lua/plenary.nvim" },
+--       config = function()
+--         local builtin = require("telescope.builtin")
+--         vim.keymap.set("n", "<C-p>", builtin.find_files)
+--         vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})
+--       end,
+--     },
+--     {
+--       "nvim-neo-tree/neo-tree.nvim",
+--       branch = "v3.x",
+--       dependencies = {
+--         "nvim-lua/plenary.nvim",
+--         "nvim-tree/nvim-web-devicons",
+--         "MunifTanjim/nui.nvim",
+--       },
+--       config = function()
+--         vim.keymap.set("n", "<C-n>", ":Neotree toggle source=filesystem<CR>", { silent = true })
+--         vim.keymap.set("n", "<leader>bb", ":Neotree toggle source=buffers<CR>", { silent = true })
+--       end,
+--     },
+--
+--     -- part 5:
+--     {
+--       "nvim-treesitter/nvim-treesitter",
+--       build = ":TSUpdate",
+--       config = function()
+--         local configs = require("nvim-treesitter.configs")
+--
+--         configs.setup({
+--           ensure_installed = { "lua", "vim", "javascript", "typescript", "html", "ruby", "go" },
+--           sync_install = false,
+--           highlight = { enable = true },
+--           indent = { enable = true },
+--         })
+--       end,
+--     },
+--
+--     -- part 6
+--     {
+--       "williamboman/mason.nvim",
+--       lazy = false,
+--       config = function()
+--         require("mason").setup()
+--       end,
+--     },
+--     {
+--       "williamboman/mason-lspconfig.nvim",
+--       lazy = false,
+--       opts = {
+--         auto_install = true,
+--         ensure_installed = { "lua_ls", "gopls", "ts_ls" },
+--       },
+--     },
+--     {
+--       "neovim/nvim-lspconfig",
+--       lazy = false,
+--       config = function()
+--         local lspconfig = require("lspconfig")
+--         lspconfig.lua_ls.setup({})
+--         lspconfig.gopls.setup({})
+--         lspconfig.ts_ls.setup({})
+--
+--         -- ver diagnosticos:    :lua vim.diagnostic.open_float()
+--
+--         vim.keymap.set("n", "K", vim.lsp.buf.hover, {}) -- apertando duas vezes você vai para a float window
+--         vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, {})
+--         vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references, {})
+--         vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
+--         vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, {})
+--
+--         vim.keymap.set("n", "<leader>do", "<cmd>lua vim.diagnostic.open_float()<CR>", { silent = true })
+--         vim.keymap.set("n", "<leader>d[", "<cmd>lua vim.diagnostic.goto_prev()<CR>", { silent = true })
+--         vim.keymap.set("n", "<leader>d]", "<cmd>lua vim.diagnostic.goto_next()<CR>", { silent = true })
+--         vim.keymap.set("n", "<leader>dd", "<cmd>Telescope diagnostics<CR>", { silent = true })
+--       end,
+--     },
+--
+--     -- part 7: linters & formatters
+--     {
+--       "nvimtools/none-ls.nvim",
+--       config = function()
+--         local null_ls = require("null-ls")
+--         null_ls.setup({
+--           sources = {
+--             null_ls.builtins.formatting.stylua,
+--             null_ls.builtins.formatting.gofmt,
+--             null_ls.builtins.formatting.rubocop,
+--             null_ls.builtins.formatting.prettier, 
+--
+--             null_ls.builtins.diagnostics.rubocop,
+--           },
+--         })
+--
+--         vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
+--       end,
+--     },
+--
+--
+--
+--
+--
+--
+--
+--
+--     -- extras: vim-tests
+--     {
+--       "vim-test/vim-test",
+--       config = function()
+--         vim.keymap.set("n", "<leader>tt", "<cmd>:TestNearest<CR>")
+--         vim.keymap.set("n", "<leader>tT", "<cmd>:TestFile<CR>")
+--         vim.keymap.set("n", "<leader>ta", "<cmd>:TestSuite<CR>")
+--         vim.keymap.set("n", "<leader>tl", "<cmd>:TestLast<CR>")
+--         vim.keymap.set("n", "<leader>tg", "<cmd>:TestVisit<CR>")
+--
+--         vim.cmd("let test#strategy = 'neovim'")
+--         -- para fazer scroll na tela de resultado: Ir para modo normal: ctrl+\ - ctrl+o
+--       end
+--     }
+--   },
+--
+--
+--
+--
+-- })
